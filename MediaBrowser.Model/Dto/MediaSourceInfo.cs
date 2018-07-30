@@ -73,7 +73,7 @@ namespace MediaBrowser.Model.Dto
 
         public MediaSourceInfo()
         {
-            Formats = new string[] { };
+            Formats = Array.Empty<string>();
             MediaStreams = new List<MediaStream>();
             RequiredHttpHeaders = new Dictionary<string, string>();
             SupportsTranscoding = true;
@@ -209,25 +209,39 @@ namespace MediaBrowser.Model.Dto
 
         public bool? IsSecondaryAudio(MediaStream stream)
         {
-            // Look for the first audio track marked as default
+            var audioStreams = new List<MediaStream>();
             foreach (MediaStream currentStream in MediaStreams)
             {
-                if (currentStream.Type == MediaStreamType.Audio && currentStream.IsDefault)
+                if (currentStream.Type == MediaStreamType.Audio)
+                {
+                    audioStreams.Add(currentStream);
+                }
+            }
+
+            // Don't consider it secondary if there's only one audio track.
+            if (audioStreams.Count < 2)
+            {
+                return false;
+            }
+
+            // Look for the first audio track marked as default
+            foreach (MediaStream currentStream in audioStreams)
+            {
+                if (currentStream.IsDefault)
                 {
                     if (currentStream.Index != stream.Index)
                     {
                         return true;
                     }
+
+                    break;
                 }
             }
 
             // Look for the first audio track
-            foreach (MediaStream currentStream in MediaStreams)
+            foreach (MediaStream currentStream in audioStreams)
             {
-                if (currentStream.Type == MediaStreamType.Audio)
-                {
-                    return currentStream.Index != stream.Index;
-                }
+                return currentStream.Index != stream.Index;
             }
 
             return null;

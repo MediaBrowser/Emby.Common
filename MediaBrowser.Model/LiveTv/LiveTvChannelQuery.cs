@@ -42,7 +42,7 @@ namespace MediaBrowser.Model.LiveTv
         /// Gets or sets the user identifier.
         /// </summary>
         /// <value>The user identifier.</value>
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Skips over a given number of items within the results. Use for paging.
@@ -98,7 +98,7 @@ namespace MediaBrowser.Model.LiveTv
         public LiveTvChannelQuery()
         {
             EnableUserData = true;
-            SortBy = new string[] {};
+            SortBy = Array.Empty<string>();
         }
     }
 }

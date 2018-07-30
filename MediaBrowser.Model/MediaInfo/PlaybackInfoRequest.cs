@@ -1,13 +1,13 @@
 ﻿using MediaBrowser.Model.Dlna;
-using System.Collections.Generic;
+using System;
 
 namespace MediaBrowser.Model.MediaInfo
 {
     public class PlaybackInfoRequest
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public long? MaxStreamingBitrate { get; set; }
 

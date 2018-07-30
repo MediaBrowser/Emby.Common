@@ -10,8 +10,6 @@ namespace MediaBrowser.Model.Session
         public string[] SupportedCommands { get; set; }
 
         public bool SupportsMediaControl { get; set; }
-        public bool SupportsContentUploading { get; set; }
-        public string MessageCallbackUrl { get; set; }
         public string PushToken { get; set; }
         public string PushTokenType { get; set; }
 
@@ -20,13 +18,14 @@ namespace MediaBrowser.Model.Session
 
         public DeviceProfile DeviceProfile { get; set; }
 
-        public string AppStoreUrl { get; set; }
         public string IconUrl { get; set; }
+
+        public string AppId { get; set; }
 
         public ClientCapabilities()
         {
-            PlayableMediaTypes = new string[] {};
-            SupportedCommands = new string[] {};
+            PlayableMediaTypes = Array.Empty<string>();
+            SupportedCommands = Array.Empty<string>();
             SupportsPersistentIdentifier = true;
         }
     }

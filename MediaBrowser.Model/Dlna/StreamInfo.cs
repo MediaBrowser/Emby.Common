@@ -18,10 +18,10 @@ namespace MediaBrowser.Model.Dlna
     {
         public StreamInfo()
         {
-            AudioCodecs = new string[] { };
-            VideoCodecs = new string[] { };
-            SubtitleCodecs = new string[] { };
-            TranscodeReasons = new TranscodeReason[] { };
+            AudioCodecs = Array.Empty<string>();
+            VideoCodecs = Array.Empty<string>();
+            SubtitleCodecs = Array.Empty<string>();
+            TranscodeReasons = Array.Empty<TranscodeReason>();
             StreamOptions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -65,7 +65,7 @@ namespace MediaBrowser.Model.Dlna
             return null;
         }
 
-        public string ItemId { get; set; }
+        public Guid ItemId { get; set; }
 
         public PlayMethod PlayMethod { get; set; }
         public EncodingContext Context { get; set; }
@@ -151,11 +151,6 @@ namespace MediaBrowser.Model.Dlna
                 return MediaSource.Path;
             }
 
-            if (string.IsNullOrEmpty(baseUrl))
-            {
-                throw new ArgumentNullException(baseUrl);
-            }
-
             List<string> list = new List<string>();
             foreach (NameValuePair pair in BuildParams(this, accessToken))
             {
@@ -193,31 +188,28 @@ namespace MediaBrowser.Model.Dlna
 
         private string GetUrl(string baseUrl, string queryString)
         {
-            if (string.IsNullOrEmpty(baseUrl))
-            {
-                throw new ArgumentNullException(baseUrl);
-            }
-
             string extension = string.IsNullOrEmpty(Container) ? string.Empty : "." + Container;
 
             baseUrl = baseUrl.TrimEnd('/');
+
+            var itemIdString = ItemId.ToString("N");
 
             if (MediaType == DlnaProfileType.Audio)
             {
                 if (StringHelper.EqualsIgnoreCase(SubProtocol, "hls"))
                 {
-                    return string.Format("{0}/audio/{1}/master.m3u8?{2}", baseUrl, ItemId, queryString);
+                    return string.Format("{0}/audio/{1}/master.m3u8?{2}", baseUrl, itemIdString, queryString);
                 }
 
-                return string.Format("{0}/audio/{1}/stream{2}?{3}", baseUrl, ItemId, extension, queryString);
+                return string.Format("{0}/audio/{1}/stream{2}?{3}", baseUrl, itemIdString, extension, queryString);
             }
 
             if (StringHelper.EqualsIgnoreCase(SubProtocol, "hls"))
             {
-                return string.Format("{0}/videos/{1}/master.m3u8?{2}", baseUrl, ItemId, queryString);
+                return string.Format("{0}/videos/{1}/master.m3u8?{2}", baseUrl, itemIdString, queryString);
             }
 
-            return string.Format("{0}/videos/{1}/stream{2}?{3}", baseUrl, ItemId, extension, queryString);
+            return string.Format("{0}/videos/{1}/stream{2}?{3}", baseUrl, itemIdString, extension, queryString);
         }
 
         private static List<NameValuePair> BuildParams(StreamInfo item, string accessToken)
@@ -451,7 +443,7 @@ namespace MediaBrowser.Model.Dlna
                 {
                     info.Url = string.Format("{0}/Videos/{1}/{2}/Subtitles/{3}/{4}/Stream.{5}",
                         baseUrl,
-                        ItemId,
+                        ItemId.ToString("N"),
                         MediaSourceId,
                         stream.Index.ToString(CultureInfo.InvariantCulture),
                         startPositionTicks.ToString(CultureInfo.InvariantCulture),
@@ -685,7 +677,7 @@ namespace MediaBrowser.Model.Dlna
             }
 
             int result;
-            if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
             {
                 return result;
             }
@@ -814,14 +806,14 @@ namespace MediaBrowser.Model.Dlna
 
                 if (IsDirectStream)
                 {
-                    return string.IsNullOrEmpty(inputCodec) ? new string[] { } : new[] { inputCodec };
+                    return string.IsNullOrEmpty(inputCodec) ? Array.Empty<string>() : new[] { inputCodec };
                 }
 
                 foreach (string codec in AudioCodecs)
                 {
                     if (StringHelper.EqualsIgnoreCase(codec, inputCodec))
                     {
-                        return string.IsNullOrEmpty(codec) ? new string[] { } : new[] { codec };
+                        return string.IsNullOrEmpty(codec) ? Array.Empty<string>() : new[] { codec };
                     }
                 }
 
@@ -839,14 +831,14 @@ namespace MediaBrowser.Model.Dlna
 
                 if (IsDirectStream)
                 {
-                    return string.IsNullOrEmpty(inputCodec) ? new string[] { } : new[] { inputCodec };
+                    return string.IsNullOrEmpty(inputCodec) ? Array.Empty<string>() : new[] { inputCodec };
                 }
 
                 foreach (string codec in VideoCodecs)
                 {
                     if (StringHelper.EqualsIgnoreCase(codec, inputCodec))
                     {
-                        return string.IsNullOrEmpty(codec) ? new string[] { } : new[] { codec };
+                        return string.IsNullOrEmpty(codec) ? Array.Empty<string>() : new[] { codec };
                     }
                 }
 
@@ -986,10 +978,10 @@ namespace MediaBrowser.Model.Dlna
                     double? maxHeight = MaxHeight.HasValue ? (double)MaxHeight.Value : (double?)null;
 
                     ImageSize newSize = DrawingUtils.Resize(size,
-                        null,
-                        null,
-                        maxWidth,
-                        maxHeight);
+                        0,
+                        0,
+                        maxWidth ?? 0,
+                        maxHeight ?? 0);
 
                     return Convert.ToInt32(newSize.Width);
                 }
@@ -1016,10 +1008,10 @@ namespace MediaBrowser.Model.Dlna
                     double? maxHeight = MaxHeight.HasValue ? (double)MaxHeight.Value : (double?)null;
 
                     ImageSize newSize = DrawingUtils.Resize(size,
-                        null,
-                        null,
-                        maxWidth,
-                        maxHeight);
+                        0,
+                        0,
+                        maxWidth ?? 0,
+                        maxHeight ?? 0);
 
                     return Convert.ToInt32(newSize.Height);
                 }

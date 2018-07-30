@@ -43,7 +43,7 @@ namespace MediaBrowser.Model.Dto
         /// </summary>
         public GameSystemSummary()
         {
-            GameFileExtensions = new string[] {};
+            GameFileExtensions = Array.Empty<string>();
         }
     }
 }

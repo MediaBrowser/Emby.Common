@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Extensions;
+using System.Linq;
 
 namespace MediaBrowser.Model.Dlna
 {
@@ -25,7 +26,7 @@ namespace MediaBrowser.Model.Dlna
             return SplitValue(Container);
         }
 
-        private static readonly string[] EmptyStringArray = new string[] {};
+        private static readonly string[] EmptyStringArray = Array.Empty<string>();
 
         public static string[] SplitValue(string value)
         {
@@ -74,7 +75,7 @@ namespace MediaBrowser.Model.Dlna
 
                 foreach (var container in allInputContainers)
                 {
-                    if (ListHelper.ContainsIgnoreCase(profileContainers, container))
+                    if (profileContainers.Contains(container, StringComparer.OrdinalIgnoreCase))
                     {
                         return false;
                     }

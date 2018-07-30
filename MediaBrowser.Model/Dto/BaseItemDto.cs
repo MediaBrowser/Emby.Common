@@ -35,7 +35,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the id.
         /// </summary>
         /// <value>The id.</value>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the etag.
@@ -154,9 +154,8 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the channel identifier.
         /// </summary>
         /// <value>The channel identifier.</value>
-        public string ChannelId { get; set; }
+        public Guid ChannelId { get; set; }
         public string ChannelName { get; set; }
-        public string ServiceName { get; set; }
 
         /// <summary>
         /// Gets or sets the overview.
@@ -174,7 +173,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the genres.
         /// </summary>
         /// <value>The genres.</value>
-        public List<string> Genres { get; set; }
+        public string[] Genres { get; set; }
 
         /// <summary>
         /// Gets or sets the community rating.
@@ -271,7 +270,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the parent id.
         /// </summary>
         /// <value>The parent id.</value>
-        public string ParentId { get; set; }
+        public Guid ParentId { get; set; }
 
         /// <summary>
         /// Gets or sets the type.
@@ -289,9 +288,9 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the studios.
         /// </summary>
         /// <value>The studios.</value>
-        public NameIdPair[] Studios { get; set; }
+        public NameGuidPair[] Studios { get; set; }
 
-        public NameIdPair[] GenreItems { get; set; }
+        public NameGuidPair[] GenreItems { get; set; }
 
         /// <summary>
         /// If the item does not have a logo, this will hold the Id of the Parent that has one.
@@ -345,13 +344,13 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the series id.
         /// </summary>
         /// <value>The series id.</value>
-        public string SeriesId { get; set; }
+        public Guid SeriesId { get; set; }
 
         /// <summary>
         /// Gets or sets the season identifier.
         /// </summary>
         /// <value>The season identifier.</value>
-        public string SeasonId { get; set; }
+        public Guid SeasonId { get; set; }
 
         /// <summary>
         /// Gets or sets the special feature count.
@@ -405,7 +404,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the artist items.
         /// </summary>
         /// <value>The artist items.</value>
-        public NameIdPair[] ArtistItems { get; set; }
+        public NameGuidPair[] ArtistItems { get; set; }
 
         /// <summary>
         /// Gets or sets the album.
@@ -429,7 +428,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the album id.
         /// </summary>
         /// <value>The album id.</value>
-        public string AlbumId { get; set; }
+        public Guid AlbumId { get; set; }
         /// <summary>
         /// Gets or sets the album image tag.
         /// </summary>
@@ -452,7 +451,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the album artists.
         /// </summary>
         /// <value>The album artists.</value>
-        public NameIdPair[] AlbumArtists { get; set; }
+        public NameGuidPair[] AlbumArtists { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the season.
@@ -575,7 +574,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the chapters.
         /// </summary>
         /// <value>The chapters.</value>
-        public List<ChapterInfoDto> Chapters { get; set; }
+        public List<ChapterInfo> Chapters { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the location.
@@ -600,12 +599,6 @@ namespace MediaBrowser.Model.Dto
         /// </summary>
         /// <value>The end date.</value>
         public DateTime? EndDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the home page URL.
-        /// </summary>
-        /// <value>The home page URL.</value>
-        public string HomePageUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the locked fields.

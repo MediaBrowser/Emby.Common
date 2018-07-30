@@ -130,6 +130,8 @@ namespace MediaBrowser.Model.Services
 
         string GetHeader(string name);
 
+        bool SendChunked { get; set; }
+
         void Redirect(string url);
 
         Stream OutputStream { get; }

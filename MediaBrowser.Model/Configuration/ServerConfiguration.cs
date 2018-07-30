@@ -202,11 +202,11 @@ namespace MediaBrowser.Model.Configuration
         /// </summary>
         public ServerConfiguration()
         {
-            UninstalledPlugins = new string[] { };
-            RemoteIPFilter = new string[] { };
-            LocalNetworkSubnets = new string[] { };
-            LocalNetworkAddresses = new string[] { };
-            CodecsUsed = new string[] { };
+            UninstalledPlugins = Array.Empty<string>();
+            RemoteIPFilter = Array.Empty<string>();
+            LocalNetworkSubnets = Array.Empty<string>();
+            LocalNetworkAddresses = Array.Empty<string>();
+            CodecsUsed = Array.Empty<string>();
             ImageExtractionTimeoutMs = 0;
             PathSubstitutions = new PathSubstitution[] { };
             EnableSimpleArtistDetection = true;
@@ -219,7 +219,7 @@ namespace MediaBrowser.Model.Configuration
             PublicHttpsPort = DefaultHttpsPort;
             HttpServerPortNumber = DefaultHttpPort;
             HttpsPortNumber = DefaultHttpsPort;
-            EnableHttps = true;
+            EnableHttps = false;
             EnableDashboardResponseCaching = true;
             EnableAnonymousUsageReporting = true;
             EnableCaseSensitiveItemIds = true;

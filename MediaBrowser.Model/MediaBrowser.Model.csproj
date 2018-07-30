@@ -34,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\SharedVersion.cs">
-      <Link>Properties\SharedVersion.cs</Link>
-    </Compile>
     <Compile Include="Activity\ActivityLogEntry.cs" />
     <Compile Include="Activity\IActivityManager.cs" />
     <Compile Include="Activity\IActivityRepository.cs" />
@@ -65,7 +62,6 @@
     <Compile Include="Connect\ConnectUserQuery.cs" />
     <Compile Include="Connect\UserLinkType.cs" />
     <Compile Include="Cryptography\ICryptoProvider.cs" />
-    <Compile Include="Devices\DeviceOptions.cs" />
     <Compile Include="Devices\DeviceQuery.cs" />
     <Compile Include="Devices\LocalFileInfo.cs" />
     <Compile Include="Devices\DeviceInfo.cs" />
@@ -97,6 +93,7 @@
     <Compile Include="Dto\MetadataEditorInfo.cs" />
     <Compile Include="Dto\NameIdPair.cs" />
     <Compile Include="Dto\NameValuePair.cs" />
+    <Compile Include="IO\IStreamHelper.cs" />
     <Compile Include="Logging\IConsoleLogger.cs" />
     <Compile Include="Net\IpEndPointInfo.cs" />
     <Compile Include="Net\IAcceptSocket.cs" />
@@ -116,7 +113,6 @@
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="IO\FileSystemMetadata.cs" />
     <Compile Include="IO\IFileSystem.cs" />
-    <Compile Include="IO\IMemoryStreamFactory.cs" />
     <Compile Include="IO\IShortcutHandler.cs" />
     <Compile Include="IO\StreamDefaults.cs" />
     <Compile Include="Globalization\ILocalizationManager.cs" />
@@ -191,7 +187,6 @@
     <Compile Include="Drawing\ImageFormat.cs" />
     <Compile Include="Drawing\ImageSize.cs" />
     <Compile Include="Dto\BaseItemPerson.cs" />
-    <Compile Include="Dto\ChapterInfoDto.cs" />
     <Compile Include="Dto\GameSystemSummary.cs" />
     <Compile Include="Dto\IItemDto.cs" />
     <Compile Include="Dto\ImageByNameInfo.cs" />
@@ -202,7 +197,6 @@
     <Compile Include="Dto\RecommendationDto.cs" />
     <Compile Include="Dto\MediaSourceInfo.cs" />
     <Compile Include="Dto\RecommendationType.cs" />
-    <Compile Include="Dto\SubtitleDownloadOptions.cs" />
     <Compile Include="Entities\IsoType.cs" />
     <Compile Include="MediaInfo\MediaInfo.cs" />
     <Compile Include="Entities\MediaStreamType.cs" />
@@ -218,7 +212,6 @@
     <Compile Include="Library\PlayAccess.cs" />
     <Compile Include="Library\UserViewQuery.cs" />
     <Compile Include="LiveTv\BaseTimerInfoDto.cs" />
-    <Compile Include="LiveTv\ChannelInfoDto.cs" />
     <Compile Include="LiveTv\LiveTvChannelQuery.cs" />
     <Compile Include="LiveTv\DayPattern.cs" />
     <Compile Include="LiveTv\GuideInfo.cs" />
@@ -226,8 +219,6 @@
     <Compile Include="LiveTv\LiveTvServiceStatus.cs" />
     <Compile Include="LiveTv\LiveTvTunerStatus.cs" />
     <Compile Include="LiveTv\ProgramAudio.cs" />
-    <Compile Include="LiveTv\ProgramQuery.cs" />
-    <Compile Include="LiveTv\RecommendedProgramQuery.cs" />
     <Compile Include="LiveTv\RecordingQuery.cs" />
     <Compile Include="LiveTv\RecordingStatus.cs" />
     <Compile Include="LiveTv\SeriesTimerInfoDto.cs" />
@@ -243,7 +234,6 @@
     <Compile Include="News\NewsItem.cs" />
     <Compile Include="News\NewsQuery.cs" />
     <Compile Include="Notifications\NotificationRequest.cs" />
-    <Compile Include="Notifications\NotificationServiceInfo.cs" />
     <Compile Include="Notifications\NotificationTypeInfo.cs" />
     <Compile Include="Playlists\PlaylistCreationResult.cs" />
     <Compile Include="Providers\ExternalIdInfo.cs" />
@@ -261,13 +251,7 @@
     <Compile Include="LiveTv\ChannelType.cs" />
     <Compile Include="LiveTv\LiveTvServiceInfo.cs" />
     <Compile Include="Net\WebSocketMessage.cs" />
-    <Compile Include="Net\WebSocketMessageType.cs" />
-    <Compile Include="Net\WebSocketState.cs" />
-    <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Notifications\NotificationLevel.cs" />
-    <Compile Include="Notifications\NotificationQuery.cs" />
-    <Compile Include="Notifications\NotificationResult.cs" />
-    <Compile Include="Notifications\NotificationsSummary.cs" />
     <Compile Include="Providers\RemoteImageQuery.cs" />
     <Compile Include="Providers\RemoteImageResult.cs" />
     <Compile Include="Providers\RemoteSearchResult.cs" />
@@ -332,7 +316,6 @@
     <Compile Include="Serialization\IJsonSerializer.cs" />
     <Compile Include="Serialization\IXmlSerializer.cs" />
     <Compile Include="Session\PlaystateRequest.cs" />
-    <Compile Include="Session\SessionInfoDto.cs" />
     <Compile Include="Session\SessionUserInfo.cs" />
     <Compile Include="Session\TranscodingInfo.cs" />
     <Compile Include="Session\UserDataChangeInfo.cs" />
@@ -382,7 +365,6 @@
     <Compile Include="Tasks\TaskTriggerInfo.cs" />
     <Compile Include="Updates\PackageInfo.cs" />
     <Compile Include="Updates\PackageVersionInfo.cs" />
-    <Compile Include="Users\AuthenticationResult.cs" />
     <Compile Include="Users\ForgotPasswordAction.cs" />
     <Compile Include="Users\ForgotPasswordResult.cs" />
     <Compile Include="Users\PinRedeemResult.cs" />

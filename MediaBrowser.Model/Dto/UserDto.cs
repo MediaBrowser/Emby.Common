@@ -50,7 +50,7 @@ namespace MediaBrowser.Model.Dto
         /// Gets or sets the id.
         /// </summary>
         /// <value>The id.</value>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         
         /// <summary>
         /// Gets or sets the primary image tag.

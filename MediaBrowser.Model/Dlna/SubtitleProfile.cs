@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using MediaBrowser.Model.Dlna;
+using System;
+using System.Linq;
 
 namespace MediaBrowser.Model.Dlna
 {
@@ -40,7 +42,7 @@ namespace MediaBrowser.Model.Dlna
             }
 
             var languages = GetLanguages();
-            return languages.Length == 0 || ListHelper.ContainsIgnoreCase(languages, subLanguage);
+            return languages.Length == 0 || languages.Contains(subLanguage, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

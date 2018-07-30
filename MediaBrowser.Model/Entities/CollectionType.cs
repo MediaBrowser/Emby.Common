@@ -32,14 +32,11 @@
         public const string TvLatest = "TvLatest";
         public const string TvNextUp = "TvNextUp";
         public const string TvResume = "TvResume";
-        public const string TvFavoriteSeries = "TvFavoriteSeries";
-        public const string TvFavoriteEpisodes = "TvFavoriteEpisodes";
 
         public const string MovieLatest = "MovieLatest";
         public const string MovieResume = "MovieResume";
         public const string MovieMovies = "MovieMovies";
         public const string MovieCollections = "MovieCollections";
-        public const string MovieFavorites = "MovieFavorites";
         public const string MovieGenres = "MovieGenres";
         public const string MovieGenre = "MovieGenre";
 

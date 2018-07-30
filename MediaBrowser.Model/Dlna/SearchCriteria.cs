@@ -33,11 +33,6 @@ namespace MediaBrowser.Model.Dlna
 
         public SearchCriteria(string search)
         {
-            if (string.IsNullOrEmpty(search))
-            {
-                throw new ArgumentNullException("search");
-            }
-
             SearchType = SearchType.Unknown;
 
             String[] factors = RegexSplit(search, "(and|or)");

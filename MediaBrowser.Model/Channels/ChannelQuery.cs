@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
+using System;
 
 namespace MediaBrowser.Model.Channels
 {
@@ -18,7 +19,7 @@ namespace MediaBrowser.Model.Channels
         /// Gets or sets the user identifier.
         /// </summary>
         /// <value>The user identifier.</value>
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Skips over a given number of items within the results. Use for paging.

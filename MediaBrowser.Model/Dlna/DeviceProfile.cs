@@ -2,6 +2,7 @@
 using MediaBrowser.Model.MediaInfo;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System;
 
 namespace MediaBrowser.Model.Dlna
 {
@@ -96,7 +97,7 @@ namespace MediaBrowser.Model.Dlna
             ResponseProfiles = new ResponseProfile[] { };
             CodecProfiles = new CodecProfile[] { };
             ContainerProfiles = new ContainerProfile[] { };
-            SubtitleProfiles = new SubtitleProfile[] { };
+            SubtitleProfiles = Array.Empty<SubtitleProfile>();
 
             XmlRootAttributes = new XmlAttribute[] { };
 
@@ -266,7 +267,7 @@ namespace MediaBrowser.Model.Dlna
             int? videoBitrate,
             string videoProfile,
             double? videoLevel,
-            float? videoFramerate,
+            float videoFramerate,
             int? packetLength,
             TransportStreamTimestamp timestamp,
             bool? isAnamorphic,

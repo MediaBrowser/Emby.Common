@@ -48,7 +48,7 @@
             orgOp += "0";
 
             // Byte-based seeking only possible when not transcoding
-            orgOp += "0";
+            orgOp += "1";
 
             return orgOp;
         }

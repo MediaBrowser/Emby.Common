@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
+using System;
 
 namespace MediaBrowser.Model.LiveTv
 {
@@ -18,7 +19,7 @@ namespace MediaBrowser.Model.LiveTv
         /// Gets or sets the user identifier.
         /// </summary>
         /// <value>The user identifier.</value>
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier.

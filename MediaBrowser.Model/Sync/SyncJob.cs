@@ -50,7 +50,7 @@ namespace MediaBrowser.Model.Sync
         /// Gets or sets the current progress.
         /// </summary>
         /// <value>The current progress.</value>
-        public double? Progress { get; set; }
+        public double Progress { get; set; }
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
@@ -108,7 +108,15 @@ namespace MediaBrowser.Model.Sync
 
         public SyncJob()
         {
-            RequestedItemIds = new Guid[] { };
+            RequestedItemIds = Array.Empty<Guid>();
         }
+    }
+
+    public enum SyncJobUpdateReason
+    {
+        SettingsUpdated,
+        StatusChange,
+        TranscodingProgress,
+        TransferProgress
     }
 }

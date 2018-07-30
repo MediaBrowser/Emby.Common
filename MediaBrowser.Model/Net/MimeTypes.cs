@@ -87,7 +87,7 @@ namespace MediaBrowser.Model.Net
             dict.Add(".asf", "video/x-ms-asf");
             dict.Add(".m4v", "video/x-m4v");
             dict.Add(".m4s", "video/mp4");
-            dict.Add(".cbz", "application/epub+zip");
+            dict.Add(".cbz", "application/x-cbz");
             dict.Add(".cbr", "application/epub+zip");
             dict.Add(".epub", "application/epub+zip");
             dict.Add(".pdf", "application/pdf");
@@ -95,6 +95,13 @@ namespace MediaBrowser.Model.Net
 
             dict.Add(".ass", "text/x-ssa");
             dict.Add(".ssa", "text/x-ssa");
+
+            dict.Add(".3gp", "video/3gpp");
+            dict.Add(".3g2", "video/3gpp2");
+            dict.Add(".m2ts", "video/mp2t");
+            dict.Add(".mpegts", "video/mp2t");
+            dict.Add(".ts", "video/mp2t");
+            dict.Add(".mpd", "video/vnd.mpeg.dash.mpd");
 
             return dict;
         }
@@ -125,35 +132,12 @@ namespace MediaBrowser.Model.Net
         /// </summary>
         public static string GetMimeType(string path, bool enableStreamDefault)
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentNullException("path");
-            }
-
             var ext = Path.GetExtension(path) ?? string.Empty;
 
             string result;
             if (MimeTypeLookup.TryGetValue(ext, out result))
             {
                 return result;
-            }
-
-            // Type video
-            if (StringHelper.EqualsIgnoreCase(ext, ".3gp"))
-            {
-                return "video/3gpp";
-            }
-            if (StringHelper.EqualsIgnoreCase(ext, ".3g2"))
-            {
-                return "video/3gpp2";
-            }
-            if (StringHelper.EqualsIgnoreCase(ext, ".ts"))
-            {
-                return "video/mp2t";
-            }
-            if (StringHelper.EqualsIgnoreCase(ext, ".mpd"))
-            {
-                return "video/vnd.mpeg.dash.mpd";
             }
 
             // Catch-all for all video types that don't require specific mime types
@@ -327,11 +311,6 @@ namespace MediaBrowser.Model.Net
 
         public static string ToExtension(string mimeType)
         {
-            if (string.IsNullOrEmpty(mimeType))
-            {
-                throw new ArgumentNullException("mimeType");
-            }
-
             // handle text/html; charset=UTF-8
             mimeType = mimeType.Split(';')[0];
 

@@ -73,11 +73,6 @@
         Genres,
 
         /// <summary>
-        /// The home page URL
-        /// </summary>
-        HomePageUrl,
-
-        /// <summary>
         /// The item counts
         /// </summary>
         ItemCounts,
@@ -166,10 +161,6 @@
         Studios,
 
         BasicSyncInfo,
-        /// <summary>
-        /// The synchronize information
-        /// </summary>
-        SyncInfo,
 
         /// <summary>
         /// The taglines of the item
@@ -200,9 +191,6 @@
         /// The service name
         /// </summary>
         ServiceName,
-        ThemeSongIds,
-        ThemeVideoIds,
-        ExternalEtag,
         PresentationUniqueKey,
         InheritedParentalRatingValue,
         ExternalSeriesId,
@@ -211,6 +199,12 @@
         DateLastSaved,
         RefreshState,
         ChannelImage,
-        EnableMediaSourceDisplay
+        EnableMediaSourceDisplay,
+        Width,
+        Height,
+        IsHD,
+        ExtraIds,
+        SpecialFeatureCount,
+        LocalTrailerCount
     }
 }
