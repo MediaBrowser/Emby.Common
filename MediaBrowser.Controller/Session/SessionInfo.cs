@@ -5,6 +5,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Threading;
 using System.Linq;
+using MediaBrowser.Model.Serialization;
 
 namespace MediaBrowser.Controller.Session
 {
@@ -26,9 +27,18 @@ namespace MediaBrowser.Controller.Session
             SessionControllers = new ISessionController[] { };
         }
 
+        // This is only here to allow XmlSerialization and should not be used
+        public SessionInfo() : this(null, null) { }
+
         public PlayerStateInfo PlayState { get; set; }
 
         public SessionUserInfo[] AdditionalUsers { get; set; }
+
+        [IgnoreDataMember]
+        public QueueItem[] NowPlayingQueue { get; set; }
+
+        [IgnoreDataMember]
+        public bool HasCustomDeviceName { get; set; }
 
         public ClientCapabilities Capabilities { get; set; }
 
@@ -46,13 +56,16 @@ namespace MediaBrowser.Controller.Session
         {
             get
             {
-                if (Capabilities == null)
+                var caps = Capabilities;
+                if (caps == null)
                 {
-                    return new string[] {};
+                    return Array.Empty<string>();
                 }
-                return Capabilities.PlayableMediaTypes;
+                return caps.PlayableMediaTypes;
             }
         }
+
+        public string PlaylistItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the id.
@@ -60,11 +73,13 @@ namespace MediaBrowser.Controller.Session
         /// <value>The id.</value>
         public string Id { get; set; }
 
+        public string ServerId { get; set; }
+
         /// <summary>
         /// Gets or sets the user id.
         /// </summary>
         /// <value>The user id.</value>
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the username.
@@ -72,11 +87,13 @@ namespace MediaBrowser.Controller.Session
         /// <value>The username.</value>
         public string UserName { get; set; }
 
+        public string UserPrimaryImageTag { get; set; }
+
         /// <summary>
         /// Gets or sets the type of the client.
         /// </summary>
         /// <value>The type of the client.</value>
-        public string AppName { get; set; }
+        public string Client { get; set; }
 
         /// <summary>
         /// Gets or sets the last activity date.
@@ -88,6 +105,7 @@ namespace MediaBrowser.Controller.Session
         /// Gets or sets the last playback check in.
         /// </summary>
         /// <value>The last playback check in.</value>
+        [IgnoreDataMember]
         public DateTime LastPlaybackCheckIn { get; set; }
 
         /// <summary>
@@ -104,6 +122,7 @@ namespace MediaBrowser.Controller.Session
         /// <value>The now playing item.</value>
         public BaseItemDto NowPlayingItem { get; set; }
 
+        [IgnoreDataMember]
         public BaseItem FullNowPlayingItem { get; set; }
 
         /// <summary>
@@ -122,13 +141,21 @@ namespace MediaBrowser.Controller.Session
         /// Gets or sets the session controller.
         /// </summary>
         /// <value>The session controller.</value>
+        [IgnoreDataMember]
         public ISessionController[] SessionControllers { get; set; }
 
         /// <summary>
         /// Gets or sets the application icon URL.
         /// </summary>
         /// <value>The application icon URL.</value>
-        public string AppIconUrl { get; set; }
+        public string AppIconUrl
+        {
+            get
+            {
+                var caps = Capabilities;
+                return caps == null ? null : caps.IconUrl;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the supported commands.
@@ -138,11 +165,12 @@ namespace MediaBrowser.Controller.Session
         {
             get
             {
-                if (Capabilities == null)
+                var caps = Capabilities;
+                if (caps == null)
                 {
-                    return new string[] {};
+                    return Array.Empty<string>();
                 }
-                return Capabilities.SupportedCommands;
+                return caps.SupportedCommands;
             }
         }
 
@@ -152,6 +180,7 @@ namespace MediaBrowser.Controller.Session
         /// Gets a value indicating whether this instance is active.
         /// </summary>
         /// <value><c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
+        [IgnoreDataMember]
         public bool IsActive
         {
             get
@@ -169,15 +198,16 @@ namespace MediaBrowser.Controller.Session
                     return false;
                 }
 
-                return (DateTime.UtcNow - LastActivityDate).TotalMinutes <= 10;
+                return true;
             }
         }
 
-        public bool SupportsMediaControl
+        public bool SupportsRemoteControl
         {
             get
             {
-                if (Capabilities == null || !Capabilities.SupportsMediaControl)
+                var caps = Capabilities;
+                if (caps == null || !caps.SupportsMediaControl)
                 {
                     return false;
                 }
@@ -221,21 +251,16 @@ namespace MediaBrowser.Controller.Session
             SessionControllers = controllers.ToArray();
         }
 
-        public bool ContainsUser(string userId)
-        {
-            return ContainsUser(new Guid(userId));
-        }
-
         public bool ContainsUser(Guid userId)
         {
-            if ((UserId ?? Guid.Empty) == userId)
+            if (UserId.Equals(userId))
             {
                 return true;
             }
 
             foreach (var additionalUser in AdditionalUsers)
             {
-                if (userId == new Guid(additionalUser.UserId))
+                if (userId.Equals(additionalUser.UserId))
                 {
                     return true;
                 }

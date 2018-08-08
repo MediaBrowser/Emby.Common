@@ -13,9 +13,7 @@ namespace MediaBrowser.Controller.Library
     {
         Folder[] GetUserViews(UserViewQuery query);
 
-        UserView GetUserSubViewWithName(string name, string parentId, string type, string sortName);
-
-        UserView GetUserSubView(string category, string type, string localizationKey, string sortName);
+        UserView GetUserSubView(Guid parentId, string type, string localizationKey, string sortName);
 
         List<Tuple<BaseItem, List<BaseItem>>> GetLatestItems(LatestItemsQuery request, DtoOptions options);
     }

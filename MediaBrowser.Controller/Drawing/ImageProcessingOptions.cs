@@ -15,7 +15,7 @@ namespace MediaBrowser.Controller.Drawing
             RequiresAutoOrientation = true;
         }
 
-        public string ItemId { get; set; }
+        public Guid ItemId { get; set; }
         public BaseItem Item { get; set; }
 
         public ItemImageInfo Image { get; set; }

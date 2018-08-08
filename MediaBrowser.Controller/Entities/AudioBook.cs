@@ -31,7 +31,7 @@ namespace MediaBrowser.Controller.Entities
         [IgnoreDataMember]
         public string SeriesName { get; set; }
         [IgnoreDataMember]
-        public Guid? SeriesId { get; set; }
+        public Guid SeriesId { get; set; }
 
         public string FindSeriesSortName()
         {
@@ -46,19 +46,14 @@ namespace MediaBrowser.Controller.Entities
             return SeriesPresentationUniqueKey;
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
-            return null;
+            return 0;
         }
 
-        public Guid? FindSeriesId()
+        public Guid FindSeriesId()
         {
             return SeriesId;
-        }
-
-        public override bool CanDownload()
-        {
-            return IsFileProtocol;
         }
 
         public override UnratedItem GetBlockUnratedType()

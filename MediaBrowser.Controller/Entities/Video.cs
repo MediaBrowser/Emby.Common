@@ -132,8 +132,6 @@ namespace MediaBrowser.Controller.Entities
         public bool HasSubtitles { get; set; }
 
         public bool IsPlaceHolder { get; set; }
-        public bool IsShortcut { get; set; }
-        public string ShortcutPath { get; set; }
 
         /// <summary>
         /// Gets or sets the default index of the video stream.
@@ -173,7 +171,7 @@ namespace MediaBrowser.Controller.Entities
             }
             else
             {
-                return new string[] {};
+                return Array.Empty<string>();
             }
             return mediaEncoder.GetPlayableStreamFileNames(Path, videoType);
         }
@@ -186,20 +184,30 @@ namespace MediaBrowser.Controller.Entities
 
         public Video()
         {
-            AdditionalParts = new string[] {};
-            LocalAlternateVersions = new string[] {};
-            SubtitleFiles = new string[] {};
-            LinkedAlternateVersions = EmptyLinkedChildArray;
+            AdditionalParts = Array.Empty<string>();
+            LocalAlternateVersions = Array.Empty<string>();
+            SubtitleFiles = Array.Empty<string>();
+            LinkedAlternateVersions = Array.Empty<LinkedChild>();
         }
 
         public override bool CanDownload()
         {
-            if (VideoType == VideoType.Dvd || VideoType == VideoType.BluRay)
+            var videoType = VideoType;
+            if (videoType == VideoType.Dvd || videoType == VideoType.BluRay)
             {
                 return false;
             }
 
-            return IsFileProtocol;
+            return CanDownloadAsSingleMedia();
+        }
+
+        [IgnoreDataMember]
+        public override bool SupportsExternalTransfer
+        {
+            get
+            {
+                return CanDownload();
+            }
         }
 
         [IgnoreDataMember]
@@ -290,6 +298,25 @@ namespace MediaBrowser.Controller.Entities
 
                 return !IsActiveRecording();
             }
+        }
+
+        public override long GetRunTimeTicksForPlayState()
+        {
+            var recordingInfo = LiveTvManager.GetActiveRecordingInfo(Path);
+
+            if (recordingInfo != null)
+            {
+                var timer = recordingInfo.Timer;
+                if (timer != null)
+                {
+                    var startDate = timer.StartDate.AddSeconds(0 - timer.PrePaddingSeconds);
+                    var endDate = timer.EndDate.AddSeconds(timer.PostPaddingSeconds);
+
+                    return (endDate - startDate).Ticks;
+                }
+            }
+
+            return base.GetRunTimeTicksForPlayState();
         }
 
         [IgnoreDataMember]
@@ -463,7 +490,7 @@ namespace MediaBrowser.Controller.Entities
                     .Select(i => i.FullName)
                     .ToArray();
             }
-            return new string[] {};
+            return Array.Empty<string>();
         }
 
         /// <summary>

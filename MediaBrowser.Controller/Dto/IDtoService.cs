@@ -2,7 +2,6 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using System.Collections.Generic;
-using MediaBrowser.Controller.Sync;
 
 namespace MediaBrowser.Controller.Dto
 {
@@ -61,20 +60,6 @@ namespace MediaBrowser.Controller.Dto
         BaseItemDto[] GetBaseItemDtos(BaseItem[] items, DtoOptions options, User user = null, BaseItem owner = null);
 
         BaseItemDto[] GetBaseItemDtos(List<BaseItem> items, DtoOptions options, User user = null, BaseItem owner = null);
-
-        /// <summary>
-        /// Gets the chapter information dto.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>ChapterInfoDto.</returns>
-        List<ChapterInfoDto> GetChapterInfoDtos(BaseItem item);
-
-        /// <summary>
-        /// Gets the user item data dto.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns>UserItemDataDto.</returns>
-        UserItemDataDto GetUserItemDataDto(UserItemData data);
 
         /// <summary>
         /// Gets the item by name dto.

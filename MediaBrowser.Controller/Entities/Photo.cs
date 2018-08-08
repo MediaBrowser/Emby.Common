@@ -53,16 +53,25 @@ namespace MediaBrowser.Controller.Entities
 
         public override bool CanDownload()
         {
-            return true;
+            return CanDownloadAsSingleMedia();
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        [IgnoreDataMember]
+        public override bool SupportsExternalTransfer
         {
-            if (Width.HasValue && Height.HasValue)
+            get
             {
-                double width = Width.Value;
-                double height = Height.Value;
+                return CanDownloadAsSingleMedia();
+            }
+        }
 
+        public override double GetDefaultPrimaryImageAspectRatio()
+        {
+            double width = Width;
+            double height = Height;
+
+            if (width > 0 && height > 0)
+            {
                 if (Orientation.HasValue)
                 {
                     switch (Orientation.Value)
@@ -78,15 +87,13 @@ namespace MediaBrowser.Controller.Entities
                     }
                 }
 
-                width /= Height.Value;
+                width /= height;
                 return width;
             }
 
             return base.GetDefaultPrimaryImageAspectRatio();
         }
 
-        public int? Width { get; set; }
-        public int? Height { get; set; }
         public string CameraMake { get; set; }
         public string CameraModel { get; set; }
         public string Software { get; set; }

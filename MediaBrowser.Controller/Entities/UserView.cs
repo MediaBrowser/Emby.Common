@@ -98,15 +98,15 @@ namespace MediaBrowser.Controller.Entities
                 .GetUserItems(parent, this, CollectionType, query);
         }
 
-        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren)
+        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren, InternalItemsQuery query)
         {
-            var result = GetItemList(new InternalItemsQuery
+            if (query == null)
             {
-                User = user,
-                EnableTotalRecordCount = false,
-                DtoOptions = new DtoOptions(true)
+                query = new InternalItemsQuery(user);
+            }
 
-            });
+            query.EnableTotalRecordCount = false;
+            var result = GetItemList(query);
 
             return result.ToList();
         }
@@ -136,11 +136,6 @@ namespace MediaBrowser.Controller.Entities
             return GetChildren(user, false);
         }
 
-        private static string[] UserSpecificViewTypes = new string[]
-            {
-                MediaBrowser.Model.Entities.CollectionType.Playlists
-            };
-
         public static bool IsUserSpecific(Folder folder)
         {
             var collectionFolder = folder as ICollectionFolder;
@@ -150,13 +145,7 @@ namespace MediaBrowser.Controller.Entities
                 return false;
             }
 
-            var supportsUserSpecific = folder as ISupportsUserSpecificView;
-            if (supportsUserSpecific != null && supportsUserSpecific.EnableUserSpecificView)
-            {
-                return true;
-            }
-
-            return UserSpecificViewTypes.Contains(collectionFolder.CollectionType ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+            return string.Equals(collectionFolder.CollectionType, Model.Entities.CollectionType.Playlists, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsEligibleForGrouping(Folder folder)
@@ -195,7 +184,7 @@ namespace MediaBrowser.Controller.Entities
 
         protected override Task ValidateChildrenInternal(IProgress<double> progress, System.Threading.CancellationToken cancellationToken, bool recursive, bool refreshChildMetadata, Providers.MetadataRefreshOptions refreshOptions, Providers.IDirectoryService directoryService)
         {
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
         [IgnoreDataMember]

@@ -2,6 +2,7 @@
 using MediaBrowser.Model.Playlists;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace MediaBrowser.Controller.Playlists
 {
@@ -12,7 +13,7 @@ namespace MediaBrowser.Controller.Playlists
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>IEnumerable&lt;Playlist&gt;.</returns>
-        IEnumerable<Playlist> GetPlaylists(string userId);
+        IEnumerable<Playlist> GetPlaylists(Guid userId);
 
         /// <summary>
         /// Creates the playlist.
@@ -28,7 +29,7 @@ namespace MediaBrowser.Controller.Playlists
         /// <param name="itemIds">The item ids.</param>
         /// <param name="userId">The user identifier.</param>
         /// <returns>Task.</returns>
-        void AddToPlaylist(string playlistId, IEnumerable<string> itemIds, string userId);
+        void AddToPlaylist(string playlistId, IEnumerable<Guid> itemIds, Guid userId);
 
         /// <summary>
         /// Removes from playlist.
@@ -43,7 +44,7 @@ namespace MediaBrowser.Controller.Playlists
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>Folder.</returns>
-        Folder GetPlaylistsFolder(string userId);
+        Folder GetPlaylistsFolder(Guid userId);
 
         /// <summary>
         /// Moves the item.

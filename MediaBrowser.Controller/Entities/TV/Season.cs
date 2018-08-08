@@ -53,12 +53,12 @@ namespace MediaBrowser.Controller.Entities.TV
         }
 
         [IgnoreDataMember]
-        public override Guid? DisplayParentId
+        public override Guid DisplayParentId
         {
             get { return SeriesId; }
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             double value = 2;
             value /= 3;
@@ -101,8 +101,12 @@ namespace MediaBrowser.Controller.Entities.TV
         {
             get
             {
-                var seriesId = SeriesId ?? FindSeriesId();
-                return seriesId.HasValue ? (LibraryManager.GetItemById(seriesId.Value) as Series) : null;
+                var seriesId = SeriesId;
+                if (seriesId.Equals(Guid.Empty))
+                {
+                    seriesId = FindSeriesId();
+                }
+                return !seriesId.Equals(Guid.Empty) ? (LibraryManager.GetItemById(seriesId) as Series) : null;
             }
         }
 
@@ -158,7 +162,9 @@ namespace MediaBrowser.Controller.Entities.TV
 
             var items = GetEpisodes(user, query.DtoOptions).Where(filter);
 
-            return PostFilterAndSort(items, query, false);
+            var enablePostSorting = query.OrderBy.Length > 0 && !string.Equals(query.OrderBy[0].Item1, ItemSortBy.SortName, StringComparison.OrdinalIgnoreCase);
+
+            return PostFilterAndSort(items, query, enablePostSorting);
         }
 
         /// <summary>
@@ -184,7 +190,7 @@ namespace MediaBrowser.Controller.Entities.TV
             return Series.GetSeasonEpisodes(this, null, null, new DtoOptions(true));
         }
 
-        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren)
+        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren, InternalItemsQuery query)
         {
             return GetEpisodes(user, new DtoOptions(true));
         }
@@ -207,7 +213,7 @@ namespace MediaBrowser.Controller.Entities.TV
         public string SeriesName { get; set; }
 
         [IgnoreDataMember]
-        public Guid? SeriesId { get; set; }
+        public Guid SeriesId { get; set; }
 
         public string FindSeriesPresentationUniqueKey()
         {
@@ -221,10 +227,10 @@ namespace MediaBrowser.Controller.Entities.TV
             return series == null ? SeriesName : series.Name;
         }
 
-        public Guid? FindSeriesId()
+        public Guid FindSeriesId()
         {
             var series = FindParent<Series>();
-            return series == null ? (Guid?)null : series.Id;
+            return series == null ? Guid.Empty : series.Id;
         }
 
         /// <summary>

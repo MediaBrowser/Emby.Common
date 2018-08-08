@@ -23,8 +23,8 @@ namespace MediaBrowser.Controller.Entities.Audio
 
         public MusicAlbum()
         {
-            Artists = new string[] {};
-            AlbumArtists = new string[] {};
+            Artists = Array.Empty<string>();
+            AlbumArtists = Array.Empty<string>();
         }
 
         [IgnoreDataMember]
@@ -136,7 +136,7 @@ namespace MediaBrowser.Controller.Entities.Audio
             return Tracks;
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             return 1;
         }

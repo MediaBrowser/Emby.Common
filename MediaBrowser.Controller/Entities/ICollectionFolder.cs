@@ -15,11 +15,6 @@ namespace MediaBrowser.Controller.Entities
         string[] PhysicalLocations { get; }
     }
 
-    public interface ISupportsUserSpecificView
-    {
-        bool EnableUserSpecificView { get; }
-    }
-
     public interface IHasCollectionType
     {
         string CollectionType { get; }

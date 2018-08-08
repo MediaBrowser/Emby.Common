@@ -16,24 +16,19 @@ namespace MediaBrowser.Controller.Connect
         /// <summary>
         /// Links the user.
         /// </summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <param name="connectUsername">The connect username.</param>
-        /// <returns>Task.</returns>
-        Task<UserLinkResult> LinkUser(string userId, string connectUsername);
+        Task<UserLinkResult> LinkUser(User user, string connectUsername);
 
         /// <summary>
         /// Removes the link.
         /// </summary>
-        /// <param name="userId">The user identifier.</param>
-        /// <returns>Task.</returns>
-        Task RemoveConnect(string userId);
+        Task RemoveConnect(User user);
 
         User GetUserFromExchangeToken(string token);
 
         /// <summary>
         /// Authenticates the specified username.
         /// </summary>
-        Task<ConnectAuthenticationResult> Authenticate(string username, string password, string passwordMd5);
+        Task<ConnectAuthenticationResult> Authenticate(string username, string password);
 
         /// <summary>
         /// Determines whether [is authorization token valid] [the specified token].

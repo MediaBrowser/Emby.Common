@@ -145,7 +145,7 @@ namespace MediaBrowser.Controller.Library
         /// <summary>
         /// Authenticates the user.
         /// </summary>
-        Task<User> AuthenticateUser(string username, string password, string passwordSha1, string passwordMd5, string remoteEndPoint, bool isUserSession);
+        Task<User> AuthenticateUser(string username, string password, string passwordSha1, string remoteEndPoint, bool isUserSession);
 
         /// <summary>
         /// Starts the forgot password process.
@@ -182,7 +182,7 @@ namespace MediaBrowser.Controller.Library
         /// <param name="userId">The user identifier.</param>
         /// <param name="newConfiguration">The new configuration.</param>
         /// <returns>Task.</returns>
-        void UpdateConfiguration(string userId, UserConfiguration newConfiguration);
+        void UpdateConfiguration(Guid userId, UserConfiguration newConfiguration);
 
         void UpdateConfiguration(User user, UserConfiguration newConfiguration);
 
@@ -191,7 +191,7 @@ namespace MediaBrowser.Controller.Library
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="userPolicy">The user policy.</param>
-        void UpdateUserPolicy(string userId, UserPolicy userPolicy);
+        void UpdateUserPolicy(Guid userId, UserPolicy userPolicy);
 
         /// <summary>
         /// Makes the valid username.

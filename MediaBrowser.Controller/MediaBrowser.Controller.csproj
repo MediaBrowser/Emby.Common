@@ -41,10 +41,10 @@
       <Link>Properties\SharedVersion.cs</Link>
     </Compile>
     <Compile Include="Authentication\IAuthenticationProvider.cs" />
+    <Compile Include="Authentication\AuthenticationResult.cs" />
     <Compile Include="Channels\ChannelItemInfo.cs" />
     <Compile Include="Channels\ChannelItemResult.cs" />
     <Compile Include="Channels\ChannelItemType.cs" />
-    <Compile Include="Channels\ChannelMediaInfo.cs" />
     <Compile Include="Channels\ChannelParentalRating.cs" />
     <Compile Include="Channels\ChannelSearchInfo.cs" />
     <Compile Include="Channels\IChannel.cs" />
@@ -63,16 +63,7 @@
     <Compile Include="Connect\UserLinkResult.cs" />
     <Compile Include="Devices\CameraImageUploadInfo.cs" />
     <Compile Include="Devices\IDeviceManager.cs" />
-    <Compile Include="Devices\IDeviceRepository.cs" />
-    <Compile Include="Dlna\ControlRequest.cs" />
-    <Compile Include="Dlna\ControlResponse.cs" />
-    <Compile Include="Dlna\EventSubscriptionResponse.cs" />
-    <Compile Include="Dlna\IConnectionManager.cs" />
-    <Compile Include="Dlna\IContentDirectory.cs" />
     <Compile Include="Dlna\IDlnaManager.cs" />
-    <Compile Include="Dlna\IEventManager.cs" />
-    <Compile Include="Dlna\IMediaReceiverRegistrar.cs" />
-    <Compile Include="Dlna\IUpnpService.cs" />
     <Compile Include="Drawing\IImageEncoder.cs" />
     <Compile Include="Drawing\IImageProcessor.cs" />
     <Compile Include="Drawing\ImageCollageOptions.cs" />
@@ -100,9 +91,7 @@
     <Compile Include="Entities\IHasProgramAttributes.cs" />
     <Compile Include="Entities\IHasScreenshots.cs" />
     <Compile Include="Entities\IHasSeries.cs" />
-    <Compile Include="Entities\IHasSpecialFeatures.cs" />
     <Compile Include="Entities\IHasStartDate.cs" />
-    <Compile Include="Entities\IHasTrailers.cs" />
     <Compile Include="Entities\IItemByName.cs" />
     <Compile Include="Entities\IMetadataContainer.cs" />
     <Compile Include="Entities\InternalItemsQuery.cs" />
@@ -121,7 +110,6 @@
     <Compile Include="Entities\UserView.cs" />
     <Compile Include="Entities\UserViewBuilder.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="IO\StreamHelper.cs" />
     <Compile Include="IResourceFileManager.cs" />
     <Compile Include="Library\DeleteOptions.cs" />
     <Compile Include="Library\ILibraryPostScanTask.cs" />
@@ -134,6 +122,7 @@
     <Compile Include="Library\ItemUpdateType.cs" />
     <Compile Include="Library\IUserDataManager.cs" />
     <Compile Include="Library\IUserViewManager.cs" />
+    <Compile Include="Library\ILiveStream.cs" />
     <Compile Include="Library\LibraryManagerExtensions.cs" />
     <Compile Include="Library\MetadataConfigurationStore.cs" />
     <Compile Include="Library\NameExtensions.cs" />
@@ -147,7 +136,6 @@
     <Compile Include="LiveTv\ILiveTvManager.cs" />
     <Compile Include="LiveTv\ILiveTvService.cs" />
     <Compile Include="LiveTv\LiveTvConflictException.cs" />
-    <Compile Include="LiveTv\LiveTvException.cs" />
     <Compile Include="LiveTv\LiveTvServiceStatusInfo.cs" />
     <Compile Include="LiveTv\LiveTvTunerInfo.cs" />
     <Compile Include="LiveTv\LiveTvProgram.cs" />
@@ -173,9 +161,7 @@
     <Compile Include="Net\IHasResultFactory.cs" />
     <Compile Include="Net\IHttpResultFactory.cs" />
     <Compile Include="Net\IHttpServer.cs" />
-    <Compile Include="Net\IServerManager.cs" />
     <Compile Include="Net\ISessionContext.cs" />
-    <Compile Include="Net\IWebSocket.cs" />
     <Compile Include="Net\IWebSocketConnection.cs" />
     <Compile Include="Net\IWebSocketListener.cs" />
     <Compile Include="Net\SecurityException.cs" />
@@ -184,9 +170,7 @@
     <Compile Include="Net\WebSocketMessageInfo.cs" />
     <Compile Include="Notifications\INotificationManager.cs" />
     <Compile Include="Notifications\INotificationService.cs" />
-    <Compile Include="Notifications\INotificationsRepository.cs" />
     <Compile Include="Notifications\INotificationTypeFactory.cs" />
-    <Compile Include="Notifications\NotificationUpdateEventArgs.cs" />
     <Compile Include="Notifications\UserNotification.cs" />
     <Compile Include="Persistence\MediaStreamQuery.cs" />
     <Compile Include="Playlists\IPlaylistManager.cs" />
@@ -313,7 +297,6 @@
     <Compile Include="Sync\IHasDynamicAccess.cs" />
     <Compile Include="Sync\IRemoteSyncProvider.cs" />
     <Compile Include="Sync\IServerSyncProvider.cs" />
-    <Compile Include="Sync\ISyncManager.cs" />
     <Compile Include="Sync\ISyncProvider.cs" />
     <Compile Include="Sync\SyncedFileInfo.cs" />
     <Compile Include="TV\ITVSeriesManager.cs" />

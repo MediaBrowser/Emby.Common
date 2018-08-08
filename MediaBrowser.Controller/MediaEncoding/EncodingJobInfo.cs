@@ -11,13 +11,21 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.MediaInfo;
 using MediaBrowser.Model.Drawing;
 using MediaBrowser.Model.Session;
+using System.IO;
+using MediaBrowser.Model.Net;
+using MediaBrowser.Controller.Library;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Controller.MediaEncoding
 {
     // For now, a common base class until the API and MediaEncoding classes are unified
-    public abstract class EncodingJobInfo
+    public class EncodingJobInfo : IDisposable
     {
-        private readonly ILogger _logger;
+        public bool HasExited { get; set; }
+        public bool IsCancelled { get; set; }
+
+        protected readonly ILogger Logger;
+        protected readonly IMediaSourceManager MediaSourceManager;
 
         public MediaStream VideoStream { get; set; }
         public VideoType VideoType { get; set; }
@@ -41,6 +49,23 @@ namespace MediaBrowser.Controller.MediaEncoding
         public long? RunTimeTicks { get; set; }
 
         public bool ReadInputAtNativeFramerate { get; set; }
+
+        public Stream LogFileStream { get; set; }
+
+        public string OutputFilePath { get; set; }
+
+        public string MimeType { get; set; }
+        public long? EncodingDurationTicks { get; set; }
+
+        public string GetMimeType(string outputPath, bool enableStreamDefault = true)
+        {
+            if (!string.IsNullOrEmpty(MimeType))
+            {
+                return MimeType;
+            }
+
+            return MimeTypes.GetMimeType(outputPath, enableStreamDefault);
+        }
 
         private TranscodeReason[] _transcodeReasons = null;
         public TranscodeReason[] TranscodeReasons
@@ -206,7 +231,7 @@ namespace MediaBrowser.Controller.MediaEncoding
                 }
             }
 
-            return new string[] { };
+            return Array.Empty<string>();
         }
 
         public string GetRequestedLevel(string codec)
@@ -235,7 +260,7 @@ namespace MediaBrowser.Controller.MediaEncoding
             {
                 var value = BaseRequest.GetOption(codec, "maxrefframes");
                 int result;
-                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
                 {
                     return result;
                 }
@@ -255,7 +280,7 @@ namespace MediaBrowser.Controller.MediaEncoding
             {
                 var value = BaseRequest.GetOption(codec, "videobitdepth");
                 int result;
-                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
                 {
                     return result;
                 }
@@ -275,7 +300,7 @@ namespace MediaBrowser.Controller.MediaEncoding
             {
                 var value = BaseRequest.GetOption(codec, "audiobitdepth");
                 int result;
-                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
                 {
                     return result;
                 }
@@ -299,7 +324,7 @@ namespace MediaBrowser.Controller.MediaEncoding
             {
                 var value = BaseRequest.GetOption(codec, "audiochannels");
                 int result;
-                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
                 {
                     return result;
                 }
@@ -311,15 +336,23 @@ namespace MediaBrowser.Controller.MediaEncoding
         public bool IsVideoRequest { get; set; }
         public TranscodingJobType TranscodingType { get; set; }
 
-        public EncodingJobInfo(ILogger logger, TranscodingJobType jobType)
+        public Guid Id { get; set; }
+        public IProgress<double> Progress { get; set; }
+        public TaskCompletionSource<bool> TaskCompletionSource;
+
+        public EncodingJobInfo(ILogger logger, IMediaSourceManager mediaSourceManager, TranscodingJobType jobType)
         {
-            _logger = logger;
+            Id = Guid.NewGuid();
+            TaskCompletionSource = new TaskCompletionSource<bool>();
+
+            Logger = logger;
+            MediaSourceManager = mediaSourceManager;
             TranscodingType = jobType;
             RemoteHttpHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            PlayableStreamFileNames = new string[] { };
-            SupportedAudioCodecs = new string[] { };
-            SupportedVideoCodecs = new string[] { };
-            SupportedSubtitleCodecs = new string[] { };
+            PlayableStreamFileNames = Array.Empty<string>();
+            SupportedAudioCodecs = Array.Empty<string>();
+            SupportedVideoCodecs = Array.Empty<string>();
+            SupportedSubtitleCodecs = Array.Empty<string>();
         }
 
         public bool IsSegmentedLiveStream
@@ -366,10 +399,10 @@ namespace MediaBrowser.Controller.MediaEncoding
                     };
 
                     var newSize = DrawingUtils.Resize(size,
-                        BaseRequest.Width,
-                        BaseRequest.Height,
-                        BaseRequest.MaxWidth,
-                        BaseRequest.MaxHeight);
+                        BaseRequest.Width ?? 0,
+                        BaseRequest.Height ?? 0,
+                        BaseRequest.MaxWidth ?? 0,
+                        BaseRequest.MaxHeight ?? 0);
 
                     return Convert.ToInt32(newSize.Width);
                 }
@@ -396,10 +429,10 @@ namespace MediaBrowser.Controller.MediaEncoding
                     };
 
                     var newSize = DrawingUtils.Resize(size,
-                        BaseRequest.Width,
-                        BaseRequest.Height,
-                        BaseRequest.MaxWidth,
-                        BaseRequest.MaxHeight);
+                        BaseRequest.Width ?? 0,
+                        BaseRequest.Height ?? 0,
+                        BaseRequest.MaxWidth ?? 0,
+                        BaseRequest.MaxHeight ?? 0);
 
                     return Convert.ToInt32(newSize.Height);
                 }
@@ -660,6 +693,28 @@ namespace MediaBrowser.Controller.MediaEncoding
             }
         }
 
+        public string ActualOutputAudioCodec
+        {
+            get
+            {
+                var codec = OutputAudioCodec;
+
+                if (string.Equals(codec, "copy", StringComparison.OrdinalIgnoreCase))
+                {
+                    var stream = AudioStream;
+
+                    if (stream != null)
+                    {
+                        return stream.Codec;
+                    }
+
+                    return null;
+                }
+
+                return codec;
+            }
+        }
+
         public bool? IsTargetInterlaced
         {
             get
@@ -715,6 +770,14 @@ namespace MediaBrowser.Controller.MediaEncoding
             }
         }
 
+        public int HlsListSize
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         private int? GetMediaStreamCount(MediaStreamType type, int limit)
         {
             var count = MediaSource.GetStreamCount(type);
@@ -727,7 +790,46 @@ namespace MediaBrowser.Controller.MediaEncoding
             return count;
         }
 
-        protected void DisposeIsoMount()
+        public virtual void Dispose()
+        {
+            DisposeLiveStream();
+            DisposeLogStream();
+            DisposeIsoMount();
+        }
+
+        private void DisposeLogStream()
+        {
+            if (LogFileStream != null)
+            {
+                try
+                {
+                    LogFileStream.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error disposing log stream", ex);
+                }
+
+                LogFileStream = null;
+            }
+        }
+
+        private async void DisposeLiveStream()
+        {
+            if (MediaSource.RequiresClosing && string.IsNullOrWhiteSpace(BaseRequest.LiveStreamId) && !string.IsNullOrWhiteSpace(MediaSource.LiveStreamId))
+            {
+                try
+                {
+                    await MediaSourceManager.CloseLiveStream(MediaSource.LiveStreamId).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error closing media source", ex);
+                }
+            }
+        }
+
+        private void DisposeIsoMount()
         {
             if (IsoMount != null)
             {
@@ -737,14 +839,56 @@ namespace MediaBrowser.Controller.MediaEncoding
                 }
                 catch (Exception ex)
                 {
-                    _logger.ErrorException("Error disposing iso mount", ex);
+                    Logger.ErrorException("Error disposing iso mount", ex);
                 }
 
                 IsoMount = null;
             }
         }
 
-        public abstract void ReportTranscodingProgress(TimeSpan? transcodingPosition, float? framerate, double? percentComplete, long? bytesTranscoded, int? bitRate);
+        public virtual void ReportTranscodingProgress(TimeSpan? transcodingPosition, float framerate, double? percentComplete, long bytesTranscoded, int? bitRate)
+        {
+            var ticks = transcodingPosition.HasValue ? transcodingPosition.Value.Ticks : 0;
+
+            //    job.Framerate = framerate;
+
+            if (!percentComplete.HasValue && ticks > 0 && RunTimeTicks.HasValue)
+            {
+                var pct = ticks / RunTimeTicks.Value;
+                percentComplete = pct * 100;
+            }
+
+            if (percentComplete.HasValue)
+            {
+                Progress.Report(percentComplete.Value);
+            }
+
+            //    job.TranscodingPositionTicks = ticks;
+            //    job.BytesTranscoded = bytesTranscoded;
+
+            var deviceId = BaseRequest.DeviceId;
+
+            if (!string.IsNullOrWhiteSpace(deviceId))
+            {
+                var audioCodec = ActualOutputVideoCodec;
+                var videoCodec = ActualOutputVideoCodec;
+
+                //    SessionManager.ReportTranscodingInfo(deviceId, new TranscodingInfo
+                //    {
+                //        Bitrate = job.TotalOutputBitrate,
+                //        AudioCodec = audioCodec,
+                //        VideoCodec = videoCodec,
+                //        Container = job.Options.OutputContainer,
+                //        Framerate = framerate,
+                //        CompletionPercentage = percentComplete,
+                //        Width = job.OutputWidth,
+                //        Height = job.OutputHeight,
+                //        AudioChannels = job.OutputAudioChannels,
+                //        IsAudioDirect = string.Equals(job.OutputAudioCodec, "copy", StringComparison.OrdinalIgnoreCase),
+                //        IsVideoDirect = string.Equals(job.OutputVideoCodec, "copy", StringComparison.OrdinalIgnoreCase)
+                //    });
+            }
+        }
     }
 
     /// <summary>

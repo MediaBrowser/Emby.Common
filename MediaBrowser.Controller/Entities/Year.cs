@@ -32,7 +32,7 @@ namespace MediaBrowser.Controller.Entities
             }
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             double value = 2;
             value /= 3;
@@ -109,39 +109,6 @@ namespace MediaBrowser.Controller.Entities
                 name;
 
             return System.IO.Path.Combine(ConfigurationManager.ApplicationPaths.YearPath, validName);
-        }
-
-        private string GetRebasedPath()
-        {
-            return GetPath(System.IO.Path.GetFileName(Path), false);
-        }
-
-        public override bool RequiresRefresh()
-        {
-            var newPath = GetRebasedPath();
-            if (!string.Equals(Path, newPath, StringComparison.Ordinal))
-            {
-                Logger.Debug("{0} path has changed from {1} to {2}", GetType().Name, Path, newPath);
-                return true;
-            }
-            return base.RequiresRefresh();
-        }
-
-        /// <summary>
-        /// This is called before any metadata refresh and returns true or false indicating if changes were made
-        /// </summary>
-        public override bool BeforeMetadataRefresh(bool replaceAllMetdata)
-        {
-            var hasChanges = base.BeforeMetadataRefresh(replaceAllMetdata);
-
-            var newPath = GetRebasedPath();
-            if (!string.Equals(Path, newPath, StringComparison.Ordinal))
-            {
-                Path = newPath;
-                hasChanges = true;
-            }
-
-            return hasChanges;
         }
     }
 }

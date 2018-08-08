@@ -12,18 +12,11 @@ namespace MediaBrowser.Controller.Devices
     public interface IDeviceManager
     {
         /// <summary>
-        /// Occurs when [device options updated].
-        /// </summary>
-        event EventHandler<GenericEventArgs<DeviceInfo>> DeviceOptionsUpdated;
-        /// <summary>
         /// Occurs when [camera image uploaded].
         /// </summary>
         event EventHandler<GenericEventArgs<CameraImageUploadInfo>> CameraImageUploaded;
 
-        /// <summary>
-        /// Registers the device.
-        /// </summary>
-        DeviceInfo RegisterDevice(string reportedId, string name, string appName, string appVersion, string usedByUserId, string usedByUserName);
+        event EventHandler<GenericEventArgs<Tuple<string, DeviceOptions>>> DeviceOptionsUpdated;
 
         /// <summary>
         /// Saves the capabilities.
@@ -41,28 +34,13 @@ namespace MediaBrowser.Controller.Devices
         ClientCapabilities GetCapabilities(string reportedId);
 
         /// <summary>
-        /// Gets the device information.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>DeviceInfo.</returns>
-        DeviceInfo GetDevice(string id);
-
-        /// <summary>
-        /// Updates the device information.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="options">The options.</param>
-        /// <returns>Task.</returns>
-        void UpdateDeviceInfo(string id, DeviceOptions options);
-
-        /// <summary>
         /// Gets the devices.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns>IEnumerable&lt;DeviceInfo&gt;.</returns>
         QueryResult<DeviceInfo> GetDevices(DeviceQuery query);
 
-        void DeleteDevice(string id);
+        DeviceInfo GetDevice(string id);
 
         /// <summary>
         /// Gets the upload history.
@@ -84,5 +62,9 @@ namespace MediaBrowser.Controller.Devices
         /// Determines whether this instance [can access device] the specified user identifier.
         /// </summary>
         bool CanAccessDevice(User user, string deviceId);
+
+        void UpdateDeviceOptions(string deviceId, DeviceOptions options);
+
+        DeviceOptions GetDeviceOptions(string deviceId);
     }
 }

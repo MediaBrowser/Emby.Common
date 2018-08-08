@@ -56,9 +56,6 @@ namespace MediaBrowser.Controller.Subtitles
         /// <summary>
         /// Gets the remote subtitles.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Task{SubtitleResponse}.</returns>
         Task<SubtitleResponse> GetRemoteSubtitles(string id, CancellationToken cancellationToken);
 
         /// <summary>

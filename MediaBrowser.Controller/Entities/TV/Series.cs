@@ -18,13 +18,10 @@ namespace MediaBrowser.Controller.Entities.TV
     /// <summary>
     /// Class Series
     /// </summary>
-    public class Series : Folder, IHasTrailers, IHasDisplayOrder, IHasLookupInfo<SeriesInfo>, IMetadataContainer
+    public class Series : Folder, IHasDisplayOrder, IHasLookupInfo<SeriesInfo>, IMetadataContainer
     {
         public Series()
         {
-            RemoteTrailers = EmptyMediaUrlArray;
-            LocalTrailerIds = new Guid[] {};
-            RemoteTrailerIds = new Guid[] {};
             AirDays = new DayOfWeek[] { };
         }
 
@@ -44,6 +41,12 @@ namespace MediaBrowser.Controller.Entities.TV
             {
                 return true;
             }
+        }
+
+        [IgnoreDataMember]
+        public override bool SupportsLocalTrailers
+        {
+            get { return true; }
         }
 
         [IgnoreDataMember]
@@ -70,11 +73,6 @@ namespace MediaBrowser.Controller.Entities.TV
             get { return true; }
         }
 
-        public Guid[] LocalTrailerIds { get; set; }
-        public Guid[] RemoteTrailerIds { get; set; }
-
-        public MediaUrl[] RemoteTrailers { get; set; }
-
         /// <summary>
         /// airdate, dvd or absolute
         /// </summary>
@@ -86,7 +84,7 @@ namespace MediaBrowser.Controller.Entities.TV
         /// <value>The status.</value>
         public SeriesStatus? Status { get; set; }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             double value = 2;
             value /= 3;
@@ -202,7 +200,7 @@ namespace MediaBrowser.Controller.Entities.TV
             return list;
         }
 
-        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren)
+        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren, InternalItemsQuery query)
         {
             return GetSeasons(user, new DtoOptions(true));
         }
@@ -226,7 +224,7 @@ namespace MediaBrowser.Controller.Entities.TV
             query.AncestorWithPresentationUniqueKey = null;
             query.SeriesPresentationUniqueKey = seriesKey;
             query.IncludeItemTypes = new[] { typeof(Season).Name };
-            query.OrderBy = new[] { ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray();
+            query.OrderBy = new[] { ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray();
 
             if (user != null)
             {
@@ -251,7 +249,7 @@ namespace MediaBrowser.Controller.Entities.TV
                 query.SeriesPresentationUniqueKey = seriesKey;
                 if (query.OrderBy.Length == 0)
                 {
-                    query.OrderBy = new[] { ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray();
+                    query.OrderBy = new[] { ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray();
                 }
                 if (query.IncludeItemTypes.Length == 0)
                 {
@@ -275,7 +273,7 @@ namespace MediaBrowser.Controller.Entities.TV
                 AncestorWithPresentationUniqueKey = null,
                 SeriesPresentationUniqueKey = seriesKey,
                 IncludeItemTypes = new[] { typeof(Episode).Name, typeof(Season).Name },
-                OrderBy = new[] { ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
+                OrderBy = new[] { ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
                 DtoOptions = options
             };
             var config = user.Configuration;
@@ -386,7 +384,7 @@ namespace MediaBrowser.Controller.Entities.TV
                 AncestorWithPresentationUniqueKey = queryFromSeries ? null : seriesKey,
                 SeriesPresentationUniqueKey = queryFromSeries ? seriesKey : null,
                 IncludeItemTypes = new[] { typeof(Episode).Name },
-                OrderBy = new[] { ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
+                OrderBy = new[] { ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
                 DtoOptions = options
             };
             if (user != null)

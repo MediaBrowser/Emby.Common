@@ -52,7 +52,7 @@ namespace MediaBrowser.Controller.Providers
             {
                 if (RefreshPaths == null)
                 {
-                    RefreshPaths = new string[] { };
+                    RefreshPaths = Array.Empty<string>();
                 }
 
                 RefreshPaths = copy.RefreshPaths.ToArray();

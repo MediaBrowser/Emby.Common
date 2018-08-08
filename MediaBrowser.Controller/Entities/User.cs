@@ -16,7 +16,6 @@ namespace MediaBrowser.Controller.Entities
     public class User : BaseItem
     {
         public static IUserManager UserManager { get; set; }
-        public static IXmlSerializer XmlSerializer { get; set; }
 
         /// <summary>
         /// From now on all user paths will be Id-based. 
@@ -49,6 +48,9 @@ namespace MediaBrowser.Controller.Entities
                 base.ImageInfos = value;
             }
         }
+
+        [IgnoreDataMember]
+        public long InternalId { get; set; }
 
         /// <summary>
         /// Gets or sets the path.
@@ -240,7 +242,7 @@ namespace MediaBrowser.Controller.Entities
             }
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             return 1;
         }

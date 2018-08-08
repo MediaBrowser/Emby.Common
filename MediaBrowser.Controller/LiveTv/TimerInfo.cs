@@ -10,11 +10,11 @@ namespace MediaBrowser.Controller.LiveTv
     {
         public TimerInfo()
         {
-            Genres = new List<string>();
+            Genres = Array.Empty<string>();
             KeepUntil = KeepUntil.UntilDeleted;
             ProviderIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             SeriesProviderIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            Tags = new string[] {};
+            Tags = Array.Empty<string>();
         }
 
         public Dictionary<string, string> ProviderIds { get; set; }
@@ -115,9 +115,27 @@ namespace MediaBrowser.Controller.LiveTv
         /// <value>The episode number.</value>
         public int? EpisodeNumber { get; set; }
         public bool IsMovie { get; set; }
-        public bool IsKids { get; set; }
-        public bool IsSports { get; set; }
-        public bool IsNews { get; set; }
+        public bool IsKids
+        {
+            get
+            {
+                return Tags.Contains("Kids", StringComparer.OrdinalIgnoreCase);
+            }
+        }
+        public bool IsSports
+        {
+            get
+            {
+                return Tags.Contains("Sports", StringComparer.OrdinalIgnoreCase);
+            }
+        }
+        public bool IsNews
+        {
+            get
+            {
+                return Tags.Contains("News", StringComparer.OrdinalIgnoreCase);
+            }
+        }
         public bool IsSeries { get; set; }
 
         /// <summary>
@@ -147,10 +165,9 @@ namespace MediaBrowser.Controller.LiveTv
         public DateTime? OriginalAirDate { get; set; }
         public bool IsProgramSeries { get; set; }
         public bool IsRepeat { get; set; }
-        public string HomePageUrl { get; set; }
         public float? CommunityRating { get; set; }
         public string OfficialRating { get; set; }
-        public List<string> Genres { get; set; }
+        public string[] Genres { get; set; }
         public string RecordingPath { get; set; }
         public KeepUntil KeepUntil { get; set; }
     }

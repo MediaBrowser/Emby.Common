@@ -13,19 +13,8 @@ namespace MediaBrowser.Controller.Entities.TV
     /// <summary>
     /// Class Episode
     /// </summary>
-    public class Episode : Video, IHasTrailers, IHasLookupInfo<EpisodeInfo>, IHasSeries
+    public class Episode : Video, IHasLookupInfo<EpisodeInfo>, IHasSeries
     {
-        public Episode()
-        {
-            RemoteTrailers = EmptyMediaUrlArray;
-            LocalTrailerIds = new Guid[] {};
-            RemoteTrailerIds = new Guid[] {};
-        }
-
-        public Guid[] LocalTrailerIds { get; set; }
-        public Guid[] RemoteTrailerIds { get; set; }
-        public MediaUrl[] RemoteTrailers { get; set; }
-
         /// <summary>
         /// Gets the season in which it aired.
         /// </summary>
@@ -53,6 +42,12 @@ namespace MediaBrowser.Controller.Entities.TV
             {
                 return IsStacked || MediaSourceCount > 1;
             }
+        }
+
+        [IgnoreDataMember]
+        public override bool SupportsLocalTrailers
+        {
+            get { return true; }
         }
 
         [IgnoreDataMember]
@@ -86,7 +81,7 @@ namespace MediaBrowser.Controller.Entities.TV
         }
 
         [IgnoreDataMember]
-        public override Guid? DisplayParentId
+        public override Guid DisplayParentId
         {
             get
             {
@@ -103,12 +98,12 @@ namespace MediaBrowser.Controller.Entities.TV
             }
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             // hack for tv plugins
             if (SourceType == SourceType.Channel)
             {
-                return null;
+                return 0;
             }
 
             double value = 16;
@@ -145,8 +140,12 @@ namespace MediaBrowser.Controller.Entities.TV
         {
             get
             {
-                var seriesId = SeriesId ?? FindSeriesId();
-                return seriesId.HasValue ? (LibraryManager.GetItemById(seriesId.Value) as Series) : null;
+                var seriesId = SeriesId;
+                if (seriesId.Equals(Guid.Empty))
+                {
+                    seriesId = FindSeriesId();
+                }
+                return !seriesId.Equals(Guid.Empty) ? (LibraryManager.GetItemById(seriesId) as Series) : null;
             }
         }
 
@@ -155,8 +154,12 @@ namespace MediaBrowser.Controller.Entities.TV
         {
             get
             {
-                var seasonId = SeasonId ?? FindSeasonId();
-                return seasonId.HasValue ? (LibraryManager.GetItemById(seasonId.Value) as Season) : null;
+                var seasonId = SeasonId;
+                if (seasonId.Equals(Guid.Empty))
+                {
+                    seasonId = FindSeasonId();
+                }
+                return !seasonId.Equals(Guid.Empty) ? (LibraryManager.GetItemById(seasonId) as Season) : null;
             }
         }
 
@@ -206,7 +209,7 @@ namespace MediaBrowser.Controller.Entities.TV
             return series == null ? SeriesName : series.Name;
         }
 
-        public Guid? FindSeasonId()
+        public Guid FindSeasonId()
         {
             var season = FindParent<Season>();
 
@@ -225,7 +228,7 @@ namespace MediaBrowser.Controller.Entities.TV
                 }
             }
 
-            return season == null ? (Guid?)null : season.Id;
+            return season == null ? Guid.Empty : season.Id;
         }
 
         /// <summary>
@@ -282,14 +285,14 @@ namespace MediaBrowser.Controller.Entities.TV
         }
 
         [IgnoreDataMember]
-        public Guid? SeasonId { get; set; }
+        public Guid SeasonId { get; set; }
         [IgnoreDataMember]
-        public Guid? SeriesId { get; set; }
+        public Guid SeriesId { get; set; }
 
-        public Guid? FindSeriesId()
+        public Guid FindSeriesId()
         {
             var series = FindParent<Series>();
-            return series == null ? (Guid?)null : series.Id;
+            return series == null ? Guid.Empty : series.Id;
         }
 
         public override IEnumerable<Guid> GetAncestorIds()
@@ -297,10 +300,9 @@ namespace MediaBrowser.Controller.Entities.TV
             var list = base.GetAncestorIds().ToList();
 
             var seasonId = SeasonId;
-
-            if (seasonId.HasValue && !list.Contains(seasonId.Value))
+            if (!seasonId.Equals(Guid.Empty) && !list.Contains(seasonId))
             {
-                list.Add(seasonId.Value);
+                list.Add(seasonId);
             }
 
             return list;

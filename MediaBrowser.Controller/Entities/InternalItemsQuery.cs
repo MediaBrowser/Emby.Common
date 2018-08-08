@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using MediaBrowser.Model.Configuration;
 using System.Linq;
 using MediaBrowser.Controller.Dto;
-using MediaBrowser.Model.Querying;
 
 namespace MediaBrowser.Controller.Entities
 {
@@ -35,6 +34,9 @@ namespace MediaBrowser.Controller.Entities
         public string[] ExcludeInheritedTags { get; set; }
         public string[] Genres { get; set; }
 
+        public bool? HasOwnerId { get; set; }
+        public Dictionary<string, string> HasAnyProviderId { get; set; }
+
         public bool? IsSpecialSeason { get; set; }
         public bool? IsMissing { get; set; }
         public bool? IsUnaired { get; set; }
@@ -44,6 +46,7 @@ namespace MediaBrowser.Controller.Entities
         public string NameStartsWith { get; set; }
         public string NameLessThan { get; set; }
         public string NameContains { get; set; }
+        public string SearchTerm { get; set; }
         public string MinSortName { get; set; }
 
         public string PresentationUniqueKey { get; set; }
@@ -58,8 +61,12 @@ namespace MediaBrowser.Controller.Entities
         public string AdjacentTo { get; set; }
         public string[] PersonTypes { get; set; }
 
+        public int? MinWidth { get; set; }
+        public int? MinHeight { get; set; }
+        public int? MaxWidth { get; set; }
+        public int? MaxHeight { get; set; }
+
         public bool? Is3D { get; set; }
-        public bool? IsHD { get; set; }
         public bool? IsLocked { get; set; }
         public bool? IsPlaceHolder { get; set; }
 
@@ -91,6 +98,10 @@ namespace MediaBrowser.Controller.Entities
         public DateTime? MinEndDate { get; set; }
         public DateTime? MaxEndDate { get; set; }
         public bool? IsAiring { get; set; }
+        public bool? HasAired { get; set; }
+
+        public bool? IsHD { get; set; }
+        public bool? Is4K { get; set; }
 
         public bool? IsMovie { get; set; }
         public bool? IsSports { get; set; }
@@ -101,7 +112,6 @@ namespace MediaBrowser.Controller.Entities
         public int? MinPlayers { get; set; }
         public int? MaxPlayers { get; set; }
         public int? MinIndexNumber { get; set; }
-        public int? AiredDuringSeason { get; set; }
         public double? MinCriticRating { get; set; }
         public double? MinCommunityRating { get; set; }
 
@@ -116,10 +126,12 @@ namespace MediaBrowser.Controller.Entities
         public bool? HasDeadParentId { get; set; }
         public bool? IsVirtualItem { get; set; }
 
-        public Guid? ParentId { get; set; }
+        public Guid ParentId { get; set; }
         public string ParentType { get; set; }
         public Guid[] AncestorIds { get; set; }
         public Guid[] TopParentIds { get; set; }
+
+        public Guid[] BoxSetLibraryFolders { get; set; }
 
         public BaseItem Parent
         {
@@ -127,7 +139,7 @@ namespace MediaBrowser.Controller.Entities
             {
                 if (value == null)
                 {
-                    ParentId = null;
+                    ParentId = Guid.Empty;
                     ParentType = null;
                 }
                 else
@@ -148,6 +160,8 @@ namespace MediaBrowser.Controller.Entities
 
         public Guid[] AlbumIds { get; set; }
         public Guid[] ArtistIds { get; set; }
+        public Guid[] AlbumArtistIds { get; set; }
+        public Guid[] ContributingArtistIds { get; set; }
         public Guid[] ExcludeArtistIds { get; set; }
         public string AncestorWithPresentationUniqueKey { get; set; }
         public string SeriesPresentationUniqueKey { get; set; }
@@ -160,7 +174,7 @@ namespace MediaBrowser.Controller.Entities
         public bool EnableGroupByMetadataKey { get; set; }
         public bool? HasChapterImages { get; set; }
 
-        public Tuple<string, SortOrder>[] OrderBy { get; set; }
+        public ValueTuple<string, SortOrder>[] OrderBy { get; set; }
 
         public DateTime? MinDateCreated { get; set; }
         public DateTime? MinDateLastSaved { get; set; }
@@ -172,6 +186,7 @@ namespace MediaBrowser.Controller.Entities
         public string HasNoInternalSubtitleTrackWithLanguage { get; set; }
         public string HasNoExternalSubtitleTrackWithLanguage { get; set; }
         public string HasNoSubtitleTrackWithLanguage { get; set; }
+        public string SeriesTimerId { get; set; }
         public bool? IsDeadArtist { get; set; }
         public bool? IsDeadStudio { get; set; }
         public bool? IsDeadPerson { get; set; }
@@ -184,37 +199,41 @@ namespace MediaBrowser.Controller.Entities
             EnableTotalRecordCount = true;
 
             DtoOptions = new DtoOptions();
-            AlbumIds = new Guid[] {};
-            ArtistIds = new Guid[] {};
-            ExcludeArtistIds = new Guid[] {};
+            AlbumIds = Array.Empty<Guid>();
+            ArtistIds = Array.Empty<Guid>();
+            AlbumArtistIds = Array.Empty<Guid>();
+            ContributingArtistIds = Array.Empty<Guid>();
+            ExcludeArtistIds = Array.Empty<Guid>();
             ExcludeProviderIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            HasAnyProviderId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             BlockUnratedItems = new UnratedItem[] { };
-            Tags = new string[] {};
-            OfficialRatings = new string[] {};
-            MediaTypes = new string[] {};
-            IncludeItemTypes = new string[] {};
-            ExcludeItemTypes = new string[] {};
-            Genres = new string[] {};
-            StudioIds = new Guid[] {};
-            GenreIds = new Guid[] {};
+            Tags = Array.Empty<string>();
+            OfficialRatings = Array.Empty<string>();
+            MediaTypes = Array.Empty<string>();
+            IncludeItemTypes = Array.Empty<string>();
+            ExcludeItemTypes = Array.Empty<string>();
+            Genres = Array.Empty<string>();
+            StudioIds = Array.Empty<Guid>();
+            GenreIds = Array.Empty<Guid>();
+            BoxSetLibraryFolders = Array.Empty<Guid>();
             ImageTypes = new ImageType[] { };
             VideoTypes = new VideoType[] { };
-            Years = new int[] { };
-            PersonTypes = new string[] {};
-            PersonIds = new Guid[] {};
-            ChannelIds = new Guid[] {};
-            ItemIds = new Guid[] {};
-            ExcludeItemIds = new Guid[] {};
-            AncestorIds = new Guid[] {};
-            TopParentIds = new Guid[] {};
-            ExcludeTags = new string[] {};
-            ExcludeInheritedTags = new string[] {};
-            PresetViews = new string[] {};
+            Years = Array.Empty<int>();
+            PersonTypes = Array.Empty<string>();
+            PersonIds = Array.Empty<Guid>();
+            ChannelIds = Array.Empty<Guid>();
+            ItemIds = Array.Empty<Guid>();
+            ExcludeItemIds = Array.Empty<Guid>();
+            AncestorIds = Array.Empty<Guid>();
+            TopParentIds = Array.Empty<Guid>();
+            ExcludeTags = Array.Empty<string>();
+            ExcludeInheritedTags = Array.Empty<string>();
+            PresetViews = Array.Empty<string>();
             TrailerTypes = new TrailerType[] { };
             SourceTypes = new SourceType[] { };
             SeriesStatuses = new SeriesStatus[] { };
-            OrderBy = new Tuple<string, SortOrder>[] { };
+            OrderBy = Array.Empty<ValueTuple<string, SortOrder>>();
         }
 
         public InternalItemsQuery(User user)

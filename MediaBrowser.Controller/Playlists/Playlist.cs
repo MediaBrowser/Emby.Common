@@ -30,7 +30,7 @@ namespace MediaBrowser.Controller.Playlists
 
         public Playlist()
         {
-            Shares = new Share[] { };
+            Shares = Array.Empty<Share>();
         }
 
         [IgnoreDataMember]
@@ -39,6 +39,20 @@ namespace MediaBrowser.Controller.Playlists
             get
             {
                 return IsPlaylistFile(Path);
+            }
+        }
+
+        [IgnoreDataMember]
+        public override string FileNameWithoutExtension
+        {
+            get
+            {
+                if (IsPlaylistFile(Path))
+                {
+                    return System.IO.Path.GetFileNameWithoutExtension(Path);
+                }
+
+                return base.FileNameWithoutExtension;
             }
         }
 
@@ -108,7 +122,7 @@ namespace MediaBrowser.Controller.Playlists
             }
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             return 1;
         }
@@ -131,12 +145,12 @@ namespace MediaBrowser.Controller.Playlists
 
         protected override Task ValidateChildrenInternal(IProgress<double> progress, CancellationToken cancellationToken, bool recursive, bool refreshChildMetadata, MetadataRefreshOptions refreshOptions, IDirectoryService directoryService)
         {
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
-        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren)
+        public override List<BaseItem> GetChildren(User user, bool includeLinkedChildren, InternalItemsQuery query)
         {
-            return GetPlayableItems(user, new DtoOptions(true));
+            return GetPlayableItems(user, query);
         }
 
         protected override IEnumerable<BaseItem> GetNonCachedChildren(IDirectoryService directoryService)
@@ -146,14 +160,7 @@ namespace MediaBrowser.Controller.Playlists
 
         public override IEnumerable<BaseItem> GetRecursiveChildren(User user, InternalItemsQuery query)
         {
-            var items = GetPlayableItems(user, query.DtoOptions);
-
-            if (query != null)
-            {
-                items = items.Where(i => UserViewBuilder.FilterItem(i, query)).ToList();
-            }
-
-            return items;
+            return GetPlayableItems(user, query);
         }
 
         public IEnumerable<Tuple<LinkedChild, BaseItem>> GetManageableItems()
@@ -161,9 +168,16 @@ namespace MediaBrowser.Controller.Playlists
             return GetLinkedChildrenInfos();
         }
 
-        private List<BaseItem> GetPlayableItems(User user, DtoOptions options)
+        private List<BaseItem> GetPlayableItems(User user, InternalItemsQuery query)
         {
-            return GetPlaylistItems(MediaType, base.GetChildren(user, true), user, options);
+            if (query == null)
+            {
+                query = new InternalItemsQuery(user);
+            }
+
+            query.IsFolder = false;
+
+            return base.GetChildren(user, true, query);
         }
 
         public static List<BaseItem> GetPlaylistItems(string playlistMediaType, IEnumerable<BaseItem> inputItems, User user, DtoOptions options)
@@ -194,7 +208,7 @@ namespace MediaBrowser.Controller.Playlists
                     Recursive = true,
                     IncludeItemTypes = new[] { typeof(Audio).Name },
                     GenreIds = new[] { musicGenre.Id },
-                    OrderBy = new[] { ItemSortBy.AlbumArtist, ItemSortBy.Album, ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
+                    OrderBy = new[] { ItemSortBy.AlbumArtist, ItemSortBy.Album, ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
                     DtoOptions = options
                 });
             }
@@ -207,7 +221,7 @@ namespace MediaBrowser.Controller.Playlists
                     Recursive = true,
                     IncludeItemTypes = new[] { typeof(Audio).Name },
                     ArtistIds = new[] { musicArtist.Id },
-                    OrderBy = new[] { ItemSortBy.AlbumArtist, ItemSortBy.Album, ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
+                    OrderBy = new[] { ItemSortBy.AlbumArtist, ItemSortBy.Album, ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
                     DtoOptions = options
                 });
             }
@@ -219,7 +233,7 @@ namespace MediaBrowser.Controller.Playlists
                 {
                     Recursive = true,
                     IsFolder = false,
-                    OrderBy = new[] { ItemSortBy.SortName }.Select(i => new Tuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
+                    OrderBy = new[] { ItemSortBy.SortName }.Select(i => new ValueTuple<string, SortOrder>(i, SortOrder.Ascending)).ToArray(),
                     MediaTypes = new[] { mediaType },
                     EnableTotalRecordCount = false,
                     DtoOptions = options
@@ -256,8 +270,29 @@ namespace MediaBrowser.Controller.Playlists
             PlaylistMediaType = value;
         }
 
+        [IgnoreDataMember]
+        private bool IsSharedItem
+        {
+            get
+            {
+                var path = Path;
+
+                if (string.IsNullOrEmpty(path))
+                {
+                    return false;
+                }
+
+                return FileSystem.ContainsSubPath(ConfigurationManager.ApplicationPaths.DataPath, path);
+            }
+        }
+
         public override bool IsVisible(User user)
         {
+            if (!IsSharedItem)
+            {
+                return base.IsVisible(user);
+            }
+
             if (user.Id == OwnerUserId)
             {
                 return true;
@@ -283,6 +318,11 @@ namespace MediaBrowser.Controller.Playlists
 
         public override bool IsVisibleStandalone(User user)
         {
+            if (!IsSharedItem)
+            {
+                return base.IsVisibleStandalone(user);
+            }
+
             return IsVisible(user);
         }
     }

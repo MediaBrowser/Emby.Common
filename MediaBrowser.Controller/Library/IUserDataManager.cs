@@ -4,7 +4,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using System;
 using System.Threading;
-using MediaBrowser.Model.Querying;
+using MediaBrowser.Controller.Dto;
 
 namespace MediaBrowser.Controller.Library
 {
@@ -28,18 +28,21 @@ namespace MediaBrowser.Controller.Library
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
         void SaveUserData(Guid userId, BaseItem item, UserItemData userData, UserDataSaveReason reason, CancellationToken cancellationToken);
+        void SaveUserData(User user, BaseItem item, UserItemData userData, UserDataSaveReason reason, CancellationToken cancellationToken);
 
         UserItemData GetUserData(User user, BaseItem item);
 
         UserItemData GetUserData(string userId, BaseItem item);
         UserItemData GetUserData(Guid userId, BaseItem item);
 
+        UserItemData GetUserData(User user, Guid itemId, List<string> keys);
+
         /// <summary>
         /// Gets the user data dto.
         /// </summary>
         UserItemDataDto GetUserDataDto(BaseItem item, User user);
 
-        UserItemDataDto GetUserDataDto(BaseItem item, BaseItemDto itemDto, User user, ItemFields[] fields);
+        UserItemDataDto GetUserDataDto(BaseItem item, BaseItemDto itemDto, User user, DtoOptions options);
 
         /// <summary>
         /// Get all user data for the given user

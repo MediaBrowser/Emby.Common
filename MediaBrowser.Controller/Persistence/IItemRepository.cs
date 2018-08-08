@@ -48,7 +48,7 @@ namespace MediaBrowser.Controller.Persistence
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        List<ChapterInfo> GetChapters(Guid id);
+        List<ChapterInfo> GetChapters(BaseItem item);
 
         /// <summary>
         /// Gets a single chapter for an item
@@ -56,7 +56,7 @@ namespace MediaBrowser.Controller.Persistence
         /// <param name="id"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        ChapterInfo GetChapter(Guid id, int index);
+        ChapterInfo GetChapter(BaseItem item, int index);
 
         /// <summary>
         /// Saves the chapters.

@@ -36,11 +36,11 @@ namespace MediaBrowser.Controller.Entities.Audio
 
         public Audio()
         {
-            Artists = new string[] {};
-            AlbumArtists = new string[] {};
+            Artists = Array.Empty<string>();
+            AlbumArtists = Array.Empty<string>();
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             return 1;
         }
@@ -92,7 +92,16 @@ namespace MediaBrowser.Controller.Entities.Audio
 
         public override bool CanDownload()
         {
-            return IsFileProtocol;
+            return CanDownloadAsSingleMedia();
+        }
+
+        [IgnoreDataMember]
+        public override bool SupportsExternalTransfer
+        {
+            get
+            {
+                return CanDownloadAsSingleMedia();
+            }
         }
 
         [IgnoreDataMember]

@@ -36,6 +36,15 @@ namespace MediaBrowser.Controller.Entities.Audio
         }
 
         [IgnoreDataMember]
+        public override bool SupportsExternalTransfer
+        {
+            get
+            {
+                return CanDownloadAsFolder();
+            }
+        }
+
+        [IgnoreDataMember]
         public override bool SupportsInheritedParentImages
         {
             get
@@ -77,7 +86,7 @@ namespace MediaBrowser.Controller.Entities.Audio
             }
         }
 
-        public override double? GetDefaultPrimaryImageAspectRatio()
+        public override double GetDefaultPrimaryImageAspectRatio()
         {
             return 1;
         }
@@ -131,13 +140,12 @@ namespace MediaBrowser.Controller.Entities.Audio
             return base.IsSaveLocalMetadataEnabled();
         }
 
-        private readonly Task _cachedTask = Task.FromResult(true);
         protected override Task ValidateChildrenInternal(IProgress<double> progress, CancellationToken cancellationToken, bool recursive, bool refreshChildMetadata, MetadataRefreshOptions refreshOptions, IDirectoryService directoryService)
         {
             if (IsAccessedByName)
             {
                 // Should never get in here anyway
-                return _cachedTask;
+                return Task.CompletedTask;
             }
 
             return base.ValidateChildrenInternal(progress, cancellationToken, recursive, refreshChildMetadata, refreshOptions, directoryService);
@@ -231,45 +239,6 @@ namespace MediaBrowser.Controller.Entities.Audio
                 name;
 
             return System.IO.Path.Combine(ConfigurationManager.ApplicationPaths.ArtistsPath, validName);
-        }
-
-        private string GetRebasedPath()
-        {
-            return GetPath(System.IO.Path.GetFileName(Path), false);
-        }
-
-        public override bool RequiresRefresh()
-        {
-            if (IsAccessedByName)
-            {
-                var newPath = GetRebasedPath();
-                if (!string.Equals(Path, newPath, StringComparison.Ordinal))
-                {
-                    Logger.Debug("{0} path has changed from {1} to {2}", GetType().Name, Path, newPath);
-                    return true;
-                }
-            }
-            return base.RequiresRefresh();
-        }
-
-        /// <summary>
-        /// This is called before any metadata refresh and returns true or false indicating if changes were made
-        /// </summary>
-        public override bool BeforeMetadataRefresh(bool replaceAllMetdata)
-        {
-            var hasChanges = base.BeforeMetadataRefresh(replaceAllMetdata);
-
-            if (IsAccessedByName)
-            {
-                var newPath = GetRebasedPath();
-                if (!string.Equals(Path, newPath, StringComparison.Ordinal))
-                {
-                    Path = newPath;
-                    hasChanges = true;
-                }
-            }
-
-            return hasChanges;
         }
     }
 }
